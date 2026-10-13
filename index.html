@@ -103,10 +103,12 @@ label{display:block;margin:16px 0 6px;font-weight:600}
   <input id="rBet" type="number" inputmode="numeric" min="1" max="604" value="1">
   <div style="height:20px"></div>
   <button class="btn" id="rTugma">Boshlash</button>
+  <button class="btn ghost hidden" id="rBekor" style="margin-top:10px">Bekor qilish</button>
 </div>
 
 <!-- ASOSIY -->
 <div id="asosiy" class="wrap ekran hidden">
+  <div class="chips" id="profillar" style="margin-bottom:8px"></div>
   <h1 id="salom"></h1>
   <div class="card">
     <div class="streak"><b id="arqonSon">0</b><span class="muted">kunlik arqon 🪢</span></div>
@@ -158,6 +160,11 @@ label{display:block;margin:16px 0 6px;font-weight:600}
     <div class="kv"><span>Shu sur'atda tugash sanasi</span><b id="taxmin"></b></div>
   </div>
   <div class="card">
+    <h2>Oila a'zosini qo'shish</h2>
+    <p class="muted" style="margin-top:0;font-size:14px">Bitta telefondan bir necha kishi o'qisa (masalan, ona va qizlari), har biriga alohida profil oching. Har bir profil reytingda alohida hisoblanadi.</p>
+    <button class="btn ghost" id="profilQosh">＋ Profil qo'shish</button>
+  </div>
+  <div class="card">
     <h2>Uzrli kunlar</h2>
     <p class="muted" id="uzrIzoh" style="margin-top:0;font-size:14px"></p>
     <div class="chips" id="uzrChips"></div>
@@ -191,7 +198,9 @@ const SAHIFA = 604, MAXB = 10;
 const HK = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
 const OY = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
 const $ = id => document.getElementById(id);
-let st = null, pending = 0, inflight = 0, busy = false, tmr = null, davr = 'hafta', jins = '';
+let st = null, pending = 0, inflight = 0, busy = false, tmr = null, davr = 'hafta', jins = '', yangiProfil = false;
+let profil = ''; try { profil = localStorage.getItem('profil') || ''; } catch(e){}
+function profilSaqla(id){ profil = id || ''; try { localStorage.setItem('profil', profil); } catch(e){} }
 
 function esc(t){ return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function son(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
@@ -201,7 +210,7 @@ function haptic(t){ try{ if (t === 'ok') tg.HapticFeedback.notificationOccurred(
 
 async function api(action, data){
   const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify(Object.assign({ action, initData: tg.initData }, data || {})) });
+    body: JSON.stringify(Object.assign({ action, initData: tg.initData, profil }, data || {})) });
   return r.json();
 }
 
@@ -224,6 +233,7 @@ async function boshla(){
 function qabul(r){
   if (!r.ok){ $('yuklash').textContent = r.error || 'Xatolik'; $('yuklash').classList.remove('hidden'); return; }
   st = r;
+  if (r.men) profilSaqla(r.men.id);
   $('yuklash').classList.add('hidden');
   if (!r.royxat){
     $('royxat').classList.remove('hidden');
@@ -231,6 +241,8 @@ function qabul(r){
     return;
   }
   $('royxat').classList.add('hidden');
+  $('rBekor').classList.add('hidden');
+  yangiProfil = false;
   $('nav').classList.remove('hidden');
   if (document.querySelectorAll('.ekran:not(.hidden)').length === 0) $('asosiy').classList.remove('hidden');
   render();
@@ -251,7 +263,7 @@ function qabul(r){
     if (!(bet >= 1 && bet <= SAHIFA)) return toast('Bet 1 dan 604 gacha bo\'lishi kerak');
     $('rTugma').disabled = true;
     try { if (tg.requestWriteAccess) tg.requestWriteAccess(() => {}); } catch(e){}
-    try { qabul(await api('royxat', { ism: $('rIsm').value.trim(), jins, bosqich: sel.value, bet })); }
+    try { qabul(await api('royxat', { ism: $('rIsm').value.trim(), jins, bosqich: sel.value, bet, yangi: yangiProfil })); }
     catch(e){ toast("Serverga ulanib bo'lmadi"); }
     $('rTugma').disabled = false;
   };
@@ -262,6 +274,11 @@ function render(){
   if (!st || !st.royxat) return;
   const m = st.men, j = joriy(), kut = pending + inflight;
   $('salom').textContent = 'Assalomu alaykum, ' + m.ism + '!';
+  const pl = st.profillar || [];
+  $('profillar').innerHTML = pl.length > 1
+    ? pl.map(p => `<button class="chip ${p.id === m.id ? 'on' : ''}" data-p="${esc(p.id)}">${esc(p.ism)}</button>`).join('')
+    : '';
+  document.querySelectorAll('#profillar button').forEach(b => b.onclick = () => profilAlmashtir(b.dataset.p));
   $('arqonSon').textContent = st.arqon + (kut > 0 && st.kunlar[6].holat !== 'faol' ? 1 : 0);
 
   $('hafta').innerHTML = st.kunlar.map((k, i) => {
@@ -354,10 +371,39 @@ $('mQosh').onclick = async () => {
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && pending > 0 && navigator.sendBeacon){
-    const ok = navigator.sendBeacon(API, new Blob([JSON.stringify({ action:'qosh', initData: tg.initData, takror: pending })], { type:'text/plain' }));
+    const ok = navigator.sendBeacon(API, new Blob([JSON.stringify({ action:'qosh', initData: tg.initData, profil, takror: pending })], { type:'text/plain' }));
     if (ok) pending = 0;
   }
 });
+
+/* ---------- Profillar ---------- */
+async function profilAlmashtir(id){
+  if (!st || id === st.men.id) return;
+  await sync();
+  profilSaqla(id);
+  $('saqlandi').textContent = 'Yuklanmoqda…';
+  try { qabul(await api('holat')); haptic(); }
+  catch(e){ toast("Serverga ulanib bo'lmadi"); }
+}
+$('profilQosh').onclick = async () => {
+  await sync();
+  yangiProfil = true; jins = '';
+  document.querySelectorAll('.choice').forEach(x => x.classList.remove('on'));
+  $('rIsm').value = ''; $('rBet').value = 1; $('rBosqich').value = 1;
+  document.querySelectorAll('.ekran').forEach(e => e.classList.add('hidden'));
+  $('nav').classList.add('hidden');
+  $('royxat').classList.remove('hidden');
+  $('rBekor').classList.remove('hidden');
+  window.scrollTo(0, 0);
+};
+$('rBekor').onclick = () => {
+  yangiProfil = false;
+  $('royxat').classList.add('hidden');
+  $('rBekor').classList.add('hidden');
+  $('nav').classList.remove('hidden');
+  document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x.dataset.e === 'men'));
+  $('men').classList.remove('hidden');
+};
 
 /* ---------- Uzr ---------- */
 function uzrBelgila(s){
