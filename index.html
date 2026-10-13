@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Oilaviy hifz</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F0E6;--card:#FFFDF8;--line:#E6DFCC;--ink:#2A2418;--muted:#7C7259;--green:#0A8F5C;--soft:#E0F2E9;--amber:#D98A1C;--amberSoft:#FCF3DF;--grey:#D9D3C2}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+body{padding-bottom:88px;-webkit-user-select:none;user-select:none}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+h1,h2,.serif{font-family:Lora,Georgia,serif}
+h1{font-size:26px;margin:4px 0 2px}
+h2{font-size:20px;margin:0 0 10px}
+p{line-height:1.5}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.hidden{display:none!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.week{display:flex;justify-content:space-between;gap:4px}
+.day{flex:1;text-align:center;font-size:12px;color:var(--muted)}
+.dot{width:30px;height:30px;border-radius:50%;margin:0 auto 4px;background:var(--grey);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.dot.faol{background:var(--green)}.dot.uzr{background:var(--amber)}
+.day.today .dot{outline:2px solid var(--ink);outline-offset:2px}
+.streak{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.streak b{font-size:28px;font-family:Lora,serif}
+.stage{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{background:var(--soft);color:var(--green);border-radius:99px;padding:6px 12px;font-weight:600;font-size:13px;white-space:nowrap}
+.page{font-family:Lora,serif;font-size:22px;font-weight:700}
+.counter{position:relative;width:250px;height:250px;margin:18px auto 6px;border:none;background:none;padding:0;display:block;cursor:pointer}
+.counter svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.counter .in{position:absolute;inset:20px;border-radius:50%;background:var(--card);box-shadow:0 8px 28px rgba(10,143,92,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .07s}
+.counter:active .in{transform:scale(.95)}
+.big{font-size:64px;font-weight:700;font-family:Lora,serif;line-height:1}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.saved{text-align:center;font-size:12px;color:var(--muted);height:16px}
+.btn{display:block;width:100%;border:none;border-radius:16px;padding:15px;font:600 16px Inter,sans-serif;background:linear-gradient(#05B57A,#0A8F5C);color:#fff;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px}
+.stat b{display:block;font-size:22px;font-family:Lora,serif}
+.stat span{font-size:12px;color:var(--muted)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{flex:1;border:none;background:none;font:500 12px Inter,sans-serif;color:var(--muted);padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:20px}
+nav button.on{color:var(--green)}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:6px}
+.seg button{flex:1;border:none;background:none;padding:9px;border-radius:10px;font:600 14px Inter,sans-serif;color:var(--muted)}
+.seg button.on{background:var(--green);color:#fff}
+.rank{display:flex;align-items:center;padding:10px 6px;border-bottom:1px solid var(--line)}
+.rank:last-child{border-bottom:none}
+.rank .n{width:34px;font-weight:700;color:var(--muted)}
+.rank .nm{flex:1}
+.rank .v{font-weight:700}
+.rank.me{background:var(--soft);border-radius:12px}
+.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.lv{border-radius:14px;padding:10px 0;text-align:center;font-weight:700;background:#fff;border:1px dashed var(--grey);color:var(--muted)}
+.lv small{display:block;font-weight:500;font-size:10px;margin-top:2px}
+.lv.done{background:var(--soft);border:1px solid var(--green);color:var(--green)}
+.lv.cur{border:1.5px solid var(--amber);color:var(--amber);background:var(--amberSoft)}
+.bar{height:10px;background:var(--grey);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.kv:last-child{border-bottom:none}
+.kv b{text-align:right}
+.choice{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px;margin:10px 0;cursor:pointer}
+.choice.on{border-color:var(--green);background:var(--soft)}
+.choice b{font-family:Lora,serif;font-size:18px}
+.choice div{font-size:13px;color:var(--muted)}
+input,select{width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font:16px Inter,sans-serif;color:var(--ink);-webkit-user-select:text;user-select:text}
+label{display:block;margin:16px 0 6px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 12px;font:500 13px Inter,sans-serif;color:var(--ink)}
+.chip.on{background:var(--amberSoft);border-color:var(--amber);color:var(--amber)}
+.toast{position:fixed;left:16px;right:16px;bottom:100px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:14px;font-size:14px;text-align:center;z-index:9}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:8}
+.sheet{background:var(--bg);width:100%;border-radius:24px 24px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+#yuklash{min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div id="yuklash">Yuklanmoqda…</div>
+
+<!-- RO'YXATDAN O'TISH -->
+<div id="royxat" class="wrap hidden">
+  <h1>Assalomu alaykum!</h1>
+  <p class="muted">Oilaviy hifz: har bir sahifani bosqich bo'yicha 10, 20, 30 … 100 martadan takrorlaymiz.</p>
+  <label for="rIsm">Ismingiz</label>
+  <input id="rIsm" maxlength="40">
+  <label>Siz kimsiz?</label>
+  <div class="choice" data-jins="erkak"><span style="font-size:26px">👤</span><span><b>Erkak</b><div>O'tkazib yuborilgan kunni 48 soat ichida tiklash, haftada bir marta.</div></span></div>
+  <div class="choice" data-jins="ayol"><span style="font-size:26px">👤</span><span><b>Ayol</b><div>Uzrli kunlarni oldindan belgilash, arqon uzilmaydi.</div></span></div>
+  <label for="rBosqich">Hozirgi bosqichingiz</label>
+  <select id="rBosqich"></select>
+  <label for="rBet">Hozir qaysi betni o'qiyapsiz?</label>
+  <input id="rBet" type="number" inputmode="numeric" min="1" max="604" value="1">
+  <div style="height:20px"></div>
+  <button class="btn" id="rTugma">Boshlash</button>
+</div>
+
+<!-- ASOSIY -->
+<div id="asosiy" class="wrap ekran hidden">
+  <h1 id="salom"></h1>
+  <div class="card">
+    <div class="streak"><b id="arqonSon">0</b><span class="muted">kunlik arqon 🪢</span></div>
+    <div class="week" id="hafta"></div>
+  </div>
+  <div class="card" id="sanoqKarta">
+    <div class="stage"><span class="page" id="betSon"></span><span class="pill" id="bosqichPill"></span></div>
+    <button class="counter" id="sanagich" aria-label="Bir marta o'qidim">
+      <svg viewBox="0 0 250 250"><circle cx="125" cy="125" r="115" fill="none" stroke="#E6DFCC" stroke-width="12"/><circle id="halqa" cx="125" cy="125" r="115" fill="none" stroke="#0A8F5C" stroke-width="12" stroke-linecap="round" stroke-dasharray="722.6" stroke-dashoffset="722.6" style="transition:stroke-dashoffset .2s"/></svg>
+      <span class="in"><span class="big" id="sanoq">0</span><span class="muted" id="maqsad">/ 10</span><span class="hint">Har o'qishda bosing</span></span>
+    </button>
+    <div class="saved" id="saqlandi"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ghost" id="ayir">−1</button>
+      <button class="btn ghost" id="tugatdim">Betni tugatdim</button>
+    </div>
+    <button class="btn ghost" id="kopBet" style="margin-top:10px">Bir nechta betni qo'shish</button>
+  </div>
+  <div class="card hidden" id="tamomKarta"><h2>🌟 Barcha bosqichlar tamom!</h2><p class="muted">Alloh qabul qilsin, hifzingizni mustahkam qilsin.</p></div>
+  <div class="stats">
+    <div class="stat"><b id="bugunT">0</b><span>bugungi takror</span></div>
+    <div class="stat"><b id="bugunB">0</b><span>bugun tugatilgan bet</span></div>
+  </div>
+</div>
+
+<!-- REYTING -->
+<div id="reyting" class="wrap ekran hidden">
+  <h1>Reyting</h1>
+  <div class="seg" id="davrlar">
+    <button data-d="bugun">Bugun</button><button data-d="hafta" class="on">Hafta</button><button data-d="oy">Oy</button>
+  </div>
+  <div id="rRoyxat"></div>
+</div>
+
+<!-- MEN -->
+<div id="men" class="wrap ekran hidden">
+  <h1>Darajam</h1>
+  <div class="card">
+    <h2>Bosqichlar</h2>
+    <div class="levels" id="darajalar"></div>
+  </div>
+  <div class="card">
+    <h2>Umumiy yo'l</h2>
+    <div class="bar"><i id="foizBar" style="width:0"></i></div>
+    <div class="kv"><span>Bajarildi</span><b id="foiz"></b></div>
+    <div class="kv"><span>Takrorlar</span><b id="jami"></b></div>
+    <div class="kv"><span>Bu hafta</span><b id="haftaT"></b></div>
+    <div class="kv"><span>O'rtacha (14 kun)</span><b id="ortacha"></b></div>
+    <div class="kv"><span>Shu sur'atda tugash sanasi</span><b id="taxmin"></b></div>
+  </div>
+  <div class="card">
+    <h2>Uzrli kunlar</h2>
+    <p class="muted" id="uzrIzoh" style="margin-top:0;font-size:14px"></p>
+    <div class="chips" id="uzrChips"></div>
+  </div>
+</div>
+
+<nav id="nav" class="hidden">
+  <button data-e="asosiy" class="on"><span>📖</span>O'qish</button>
+  <button data-e="reyting"><span>🏆</span>Reyting</button>
+  <button data-e="men"><span>🪢</span>Darajam</button>
+</nav>
+
+<div class="modal hidden" id="modal">
+  <div class="sheet">
+    <h2>Nechta bet tugatdingiz?</h2>
+    <p class="muted" style="margin-top:0;font-size:14px">Har bir bet joriy bosqich takrori bilan to'liq hisoblanadi. Joriy betdan boshlab sanaladi.</p>
+    <input id="betSoni" type="number" inputmode="numeric" min="1" max="60" value="1">
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost" id="mBekor">Bekor</button>
+      <button class="btn" id="mQosh">Qo'shish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ↓↓↓ Apps Script "Web app" manzilini shu yerga qo'ying ↓↓↓
+const API = "https://script.google.com/macros/s/AKfycbxc7keRIWncQ5YlcxFGl1FgcZeP2u6UsIZi0spcIXJrhW5aJL714iGf0V5Xt5C6hArCAg/exec";
+
+const tg = window.Telegram && window.Telegram.WebApp;
+const SAHIFA = 604, MAXB = 10;
+const HK = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+const OY = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
+const $ = id => document.getElementById(id);
+let st = null, pending = 0, inflight = 0, busy = false, tmr = null, davr = 'hafta', jins = '';
+
+function esc(t){ return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function son(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function sanaMatn(s, yil){ const t = Number(s.slice(8)) + '-' + OY[Number(s.slice(5,7)) - 1]; return yil ? s.slice(0,4) + '-yil ' + t : t; }
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+function haptic(t){ try{ if (t === 'ok') tg.HapticFeedback.notificationOccurred('success'); else tg.HapticFeedback.impactOccurred('light'); }catch(e){} }
+
+async function api(action, data){
+  const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({ action, initData: tg.initData }, data || {})) });
+  return r.json();
+}
+
+/* Server holati + hali saqlanmagan bosishlar asosida joriy o'rin */
+function joriy(){
+  let s = st.men.bosqich, p = st.men.bet, c = st.men.sanoq + pending + inflight;
+  while (s <= MAXB && c >= s * 10){ c -= s * 10; p++; if (p > SAHIFA){ p = 1; s++; } }
+  return { s, p, c };
+}
+const indeks = (s, p) => (s - 1) * SAHIFA + p;
+
+async function boshla(){
+  if (!tg || !tg.initData){ $('yuklash').textContent = "Iltimos, ilovani Telegram ichida oching."; return; }
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor('#F3F0E6'); tg.setBackgroundColor('#F3F0E6'); } catch(e){}
+  try { qabul(await api('holat')); }
+  catch(e){ $('yuklash').textContent = "Serverga ulanib bo'lmadi. Internetni tekshirib, qayta oching."; }
+}
+
+function qabul(r){
+  if (!r.ok){ $('yuklash').textContent = r.error || 'Xatolik'; $('yuklash').classList.remove('hidden'); return; }
+  st = r;
+  $('yuklash').classList.add('hidden');
+  if (!r.royxat){
+    $('royxat').classList.remove('hidden');
+    $('rIsm').value = r.ism || '';
+    return;
+  }
+  $('royxat').classList.add('hidden');
+  $('nav').classList.remove('hidden');
+  if (document.querySelectorAll('.ekran:not(.hidden)').length === 0) $('asosiy').classList.remove('hidden');
+  render();
+}
+
+/* ---------- Ro'yxatdan o'tish ---------- */
+(function(){
+  const sel = $('rBosqich');
+  for (let s = 1; s <= MAXB; s++) sel.insertAdjacentHTML('beforeend', `<option value="${s}">${s}-bosqich (${s*10} talik)</option>`);
+  document.querySelectorAll('.choice').forEach(el => el.onclick = () => {
+    document.querySelectorAll('.choice').forEach(x => x.classList.remove('on'));
+    el.classList.add('on'); jins = el.dataset.jins;
+  });
+  $('rTugma').onclick = async () => {
+    const bet = parseInt($('rBet').value, 10);
+    if (!$('rIsm').value.trim()) return toast('Ismingizni yozing');
+    if (!jins) return toast('Erkak yoki ayolni tanlang');
+    if (!(bet >= 1 && bet <= SAHIFA)) return toast('Bet 1 dan 604 gacha bo\'lishi kerak');
+    $('rTugma').disabled = true;
+    try { if (tg.requestWriteAccess) tg.requestWriteAccess(() => {}); } catch(e){}
+    try { qabul(await api('royxat', { ism: $('rIsm').value.trim(), jins, bosqich: sel.value, bet })); }
+    catch(e){ toast("Serverga ulanib bo'lmadi"); }
+    $('rTugma').disabled = false;
+  };
+})();
+
+/* ---------- Chizish ---------- */
+function render(){
+  if (!st || !st.royxat) return;
+  const m = st.men, j = joriy(), kut = pending + inflight;
+  $('salom').textContent = 'Assalomu alaykum, ' + m.ism + '!';
+  $('arqonSon').textContent = st.arqon + (kut > 0 && st.kunlar[6].holat !== 'faol' ? 1 : 0);
+
+  $('hafta').innerHTML = st.kunlar.map((k, i) => {
+    let h = k.holat; if (i === 6 && kut > 0) h = 'faol';
+    const belgi = h === 'faol' ? '✓' : h === 'uzr' ? '•' : '';
+    return `<div class="day ${i === 6 ? 'today' : ''}"><div class="dot ${h}">${belgi}</div>${HK[k.hafta]}</div>`;
+  }).join('');
+
+  const tamom = j.s > MAXB;
+  $('sanoqKarta').classList.toggle('hidden', tamom);
+  $('tamomKarta').classList.toggle('hidden', !tamom);
+  if (!tamom){
+    $('betSon').textContent = j.p + '-bet';
+    $('bosqichPill').textContent = j.s + '-bosqich · ' + j.s * 10 + ' talik';
+    $('sanoq').textContent = j.c;
+    $('maqsad').textContent = '/ ' + j.s * 10;
+    $('halqa').style.strokeDashoffset = 722.6 * (1 - j.c / (j.s * 10));
+  }
+  $('saqlandi').textContent = kut > 0 ? 'Saqlanmoqda…' : 'Saqlandi ✓';
+  $('ayir').disabled = pending <= 0;
+  $('bugunT').textContent = son(st.bugun.takror + kut);
+  $('bugunB').textContent = st.bugun.betlar + (indeks(j.s, j.p) - indeks(m.bosqich, m.bet));
+  try { kut > 0 ? tg.enableClosingConfirmation() : tg.disableClosingConfirmation(); } catch(e){}
+
+  // Darajam
+  let lv = '';
+  for (let s = 1; s <= MAXB; s++){
+    let cls = '', izoh = s + '-bosqich';
+    if (s < j.s){ cls = 'done'; izoh = '✓'; }
+    else if (s === j.s){ cls = 'cur'; izoh = Math.floor(((j.p - 1) + j.c / (s * 10)) / SAHIFA * 100) + '%'; }
+    lv += `<div class="lv ${cls}">${s * 10}<small>${izoh}</small></div>`;
+  }
+  $('darajalar').innerHTML = lv;
+  $('foiz').textContent = st.foiz.toFixed(1) + '%';
+  $('foizBar').style.width = Math.min(100, st.foiz) + '%';
+  $('jami').textContent = son(st.qildi) + ' / ' + son(st.jami);
+  $('haftaT').textContent = son(st.haftaTakror + kut);
+  $('ortacha').textContent = son(st.ortacha) + ' takror/kun';
+  $('taxmin').textContent = st.taxmin ? sanaMatn(st.taxmin, true) : 'Hali hisoblanmadi';
+
+  const u = st.uzr;
+  $('uzrIzoh').textContent = m.jins === 'ayol'
+    ? "Uzrli kunlarni oldindan belgilang yoki 2 kun ichida orqaga belgilang. Bu kunlar arqonni uzmaydi."
+    : (u.cheklov || "O'tkazib yuborilgan kunni 48 soat ichida tiklashingiz mumkin (haftada bir marta).");
+  const bel = u.belgilangan.map(s => `<span class="chip on">${sanaMatn(s)} ✓</span>`).join('');
+  const mum = u.sanalar.map(s => `<button class="chip" data-s="${s}">${sanaMatn(s)}</button>`).join('');
+  $('uzrChips').innerHTML = (bel + mum) || '<span class="muted" style="font-size:14px">Hozircha belgilanadigan kun yo\'q.</span>';
+  document.querySelectorAll('#uzrChips button').forEach(b => b.onclick = () => uzrBelgila(b.dataset.s));
+}
+
+/* ---------- Sanash va saqlash ---------- */
+async function sync(){
+  clearTimeout(tmr);
+  if (busy || pending <= 0) return;
+  const n = pending; pending = 0; inflight = n; busy = true;
+  try {
+    const r = await api('qosh', { takror: n });
+    if (r.ok) st = r; else { pending += n; toast(r.error || 'Saqlab bo\'lmadi'); }
+  } catch(e){ pending += n; toast("Internet yo'q, keyinroq saqlanadi"); }
+  inflight = 0; busy = false; render();
+  if (pending > 0) tmr = setTimeout(sync, 3000);
+}
+
+$('sanagich').onclick = () => {
+  if (!st || joriy().s > MAXB) return;
+  const old = joriy().p;
+  pending++;
+  const j = joriy();
+  if (j.p !== old){ haptic('ok'); toast((old) + '-bet tugadi, barakalla!'); sync(); }
+  else { haptic(); clearTimeout(tmr); tmr = setTimeout(sync, 2500); }
+  render();
+};
+$('ayir').onclick = () => { if (pending > 0){ pending--; render(); } };
+$('tugatdim').onclick = () => {
+  const j = joriy(); if (j.s > MAXB) return;
+  pending += j.s * 10 - j.c; haptic('ok'); render(); sync();
+};
+$('kopBet').onclick = () => { $('modal').classList.remove('hidden'); $('betSoni').focus(); };
+$('mBekor').onclick = () => $('modal').classList.add('hidden');
+$('mQosh').onclick = async () => {
+  const k = parseInt($('betSoni').value, 10);
+  if (!(k >= 1 && k <= 60)) return toast('1 dan 60 gacha son kiriting');
+  $('modal').classList.add('hidden');
+  await sync();
+  inflight = 1; render();
+  try { const r = await api('qosh', { betlar: k }); if (r.ok){ st = r; haptic('ok'); toast(k + ' bet qo\'shildi'); } else toast(r.error); }
+  catch(e){ toast("Serverga ulanib bo'lmadi"); }
+  inflight = 0; render();
+};
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && pending > 0 && navigator.sendBeacon){
+    const ok = navigator.sendBeacon(API, new Blob([JSON.stringify({ action:'qosh', initData: tg.initData, takror: pending })], { type:'text/plain' }));
+    if (ok) pending = 0;
+  }
+});
+
+/* ---------- Uzr ---------- */
+function uzrBelgila(s){
+  const ish = async ok => {
+    if (!ok) return;
+    try { const r = await api('uzr', { sana: s }); if (r.ok){ st = r; render(); toast('Belgilandi'); } else toast(r.error); }
+    catch(e){ toast("Serverga ulanib bo'lmadi"); }
+  };
+  const savol = sanaMatn(s) + ' kunini uzrli deb belgilaysizmi?';
+  try { tg.showConfirm(savol, ish); } catch(e){ ish(confirm(savol)); }
+}
+
+/* ---------- Reyting ---------- */
+function qator(list, men, birlik){
+  if (!list.length) return '<p class="muted center">Hali ma\'lumot yo\'q</p>';
+  return list.map((x, i) => `<div class="rank ${x.id === men ? 'me' : ''}"><span class="n">${['🥇','🥈','🥉'][i] || (i + 1)}</span><span class="nm">${esc(x.ism)}</span><span class="v">${son(x.qiymat)} ${birlik}</span></div>`).join('');
+}
+async function reytingYukla(){
+  $('rRoyxat').innerHTML = '<p class="muted center">Yuklanmoqda…</p>';
+  await sync();
+  try {
+    const r = await api('reyting', { davr });
+    if (!r.ok){ $('rRoyxat').innerHTML = `<p class="muted center">${esc(r.error)}</p>`; return; }
+    let h = `<div class="card"><h2>Umumiy reyting</h2><p class="muted" style="margin:-6px 0 6px;font-size:13px">Takrorlar soni: barcha bosqichlarni adolatli solishtiradi</p>${qator(r.umumiy, r.menId, '')}</div>`;
+    r.bosqichlar.forEach(b => {
+      h += `<div class="card"><h2>${b.bosqich}-bosqich · ${b.bosqich * 10} talik</h2><p class="muted" style="margin:-6px 0 6px;font-size:13px">To'liq tugatilgan betlar</p>${qator(b.royxat, r.menId, 'bet')}</div>`;
+    });
+    h += `<div class="card"><h2>🪢 Arqon</h2>${qator(r.arqonlar, r.menId, 'kun')}</div>`;
+    $('rRoyxat').innerHTML = h;
+  } catch(e){ $('rRoyxat').innerHTML = '<p class="muted center">Serverga ulanib bo\'lmadi</p>'; }
+}
+document.querySelectorAll('#davrlar button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#davrlar button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); davr = b.dataset.d; reytingYukla();
+});
+
+/* ---------- Bo'limlar ---------- */
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#nav button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.ekran').forEach(e => e.classList.add('hidden'));
+  $(b.dataset.e).classList.remove('hidden');
+  if (b.dataset.e === 'reyting') reytingYukla();
+  window.scrollTo(0, 0);
+});
+
+boshla();
+</script>
+</body>
+</html>
