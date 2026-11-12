@@ -6,7 +6,7 @@
 <title>Oilaviy hifz</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Marcellus&family=Baloo+2:wght@500;600;700;800&family=Amiri+Quran&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Marcellus&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F6F6F2;--ink:#0E0E0C;--mut:#5C5C55;--card:#FFFFFF;--line:#0E0E0C;--line2:#D9D9D0;--acc:#0B7A55;--accInk:#FFFFFF;--soft:#E2F3EC;--softInk:#0B5F43;--btn:#0B7A55;--btnInk:#FFFFFF;--blk:#0E0E0C;--blkInk:#F6F6F2;--blkMut:#B9B9B0;--seg:#2BD49A;--segOff:#3A3A36;--navOn:#0E0E0C;--navOnInk:#F6F6F2;--dash:#B9B9B0;--font:'Space Grotesk',system-ui,sans-serif;--fontD:'Space Grotesk',system-ui,sans-serif;--rad:22px;--radS:16px;--cb:1.5px solid var(--line)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -148,28 +148,6 @@ html[data-d=bolalar] .ctl .tug{background:var(--sky);color:var(--skyInk)}
 .ctl .tm.yur{background:var(--soft);color:var(--softInk);border-color:var(--acc)}
 .ctl button:disabled{opacity:.4}
 .svd{font-size:11px;color:var(--mut);text-align:center;height:15px;line-height:15px;flex:none}
-.mus{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--card);border:var(--cb);border-radius:var(--rad);padding:4px 10px 8px;margin:8px 0 6px}
-.mus-hd{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:12px;color:var(--mut);flex:none;min-height:30px}
-.mus-hd b{color:var(--ink)}
-.mus-hd .nv{border:none;background:none;color:var(--ink);font:700 20px var(--font);padding:0 10px;cursor:pointer;line-height:1}
-.mus-hd .nv:disabled{opacity:.25}
-.mus-hd .yb{border:1px solid var(--line2);background:none;color:var(--ink);border-radius:99px;padding:3px 10px;font:600 12px var(--font);cursor:pointer}
-.mus-hd .yb.on{background:var(--navOn);border-color:var(--navOn);color:var(--navOnInk)}
-.mus-hd .bq{font-size:11px;color:var(--acc);font-weight:700;cursor:pointer;background:none;border:none;font-family:var(--font)}
-.mlw{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;direction:rtl;overflow:hidden;color:var(--ink)}
-.ml{display:flex;justify-content:space-between;align-items:center;white-space:nowrap;line-height:1.5}
-.ml.c{justify-content:center;gap:.3em}
-.ml.sura{justify-content:center;border:1px solid var(--acc);border-radius:8px;background:var(--soft);color:var(--softInk);font-family:'Amiri Quran',Amiri,serif;line-height:1.35}
-.ml.bsm{justify-content:center;font-family:'Amiri Quran',Amiri,serif}
-.ml.yop>span{filter:blur(7px);opacity:.55;transition:filter .2s}
-.ml.yop.och>span{filter:none;opacity:1}
-.mus-xab{margin:auto;text-align:center;color:var(--mut);font-size:14px;padding:12px;direction:ltr}
-.mbar{flex:none;width:100%;height:62px;border:none;border-radius:var(--radS);background:var(--btn);color:var(--btnInk);display:flex;align-items:center;justify-content:space-between;padding:0 18px;cursor:pointer;font-family:var(--font);margin-bottom:8px;transition:transform .07s}
-.mbar:active{transform:scale(.98)}
-html[data-d=zamon] .mbar{background:var(--blk);color:var(--blkInk)}
-.mbar b{font-size:32px;letter-spacing:-1px;font-family:var(--fontD)}
-.mbar .z-segs{width:120px;gap:3px}.mbar .z-segs i{height:7px}
-html:not([data-d=zamon]) .mbar .z-segs i{background:rgba(255,255,255,.25)}html:not([data-d=zamon]) .mbar .z-segs i.on{background:var(--btnInk)}
 .av{display:inline-block;flex:none;vertical-align:middle}
 .prof{text-align:center}
 .prof h2{margin:4px 0 0;font-size:22px}
@@ -287,8 +265,8 @@ const $ = id => document.getElementById(id);
 let st = null, pending = 0, inflight = 0, busy = false, tmr = null, davr = 'hafta', jins = '', yangiProfil = false;
 let profil = ''; try { profil = localStorage.getItem('profil') || ''; } catch(e){}
 let tm = { ms: 0, start: null }, vaqtNavbat = [], arqonAnim = true;
-let mz = { d: 'zamon', r: 'yashil', m: 'avto', k: 'sanagich' };
-let yuklandi = 0, korP = null, yopiq = false, avN = 0;
+let mz = { d: 'zamon', r: 'yashil', m: 'avto' };
+let yuklandi = 0, avN = 0;
 try { const x = JSON.parse(localStorage.getItem('mavzu') || 'null'); if (x && x.d) mz = x; } catch(e){}
 
 function profilSaqla(id){ profil = id || ''; try { localStorage.setItem('profil', profil); } catch(e){} }
@@ -326,7 +304,7 @@ function tungi(){
   try { return matchMedia('(prefers-color-scheme: dark)').matches; } catch(e){ return false; }
 }
 function mavzuQolla(x){
-  mz = Object.assign({ d: 'zamon', r: 'yashil', m: 'avto', k: 'sanagich' }, x || {});
+  mz = Object.assign({ d: 'zamon', r: 'yashil', m: 'avto' }, x || {});
   try { localStorage.setItem('mavzu', JSON.stringify(mz)); } catch(e){}
   const tun = mz.m === 'tun' || (mz.m === 'avto' && tungi());
   const kalit = mz.d === 'bolalar' ? 'bolalar-' + (tun ? 'tun' : 'kun') : mz.d + '-' + mz.r + '-' + (tun ? 'tun' : 'kun');
@@ -390,7 +368,7 @@ function qabul(r, yangi){
     return;
   }
   if (r.men.mavzu) mavzuQolla(r.men.mavzu);
-  if (yangi){ tmTikla(); arqonAnim = true; korP = null; yuklandi = Date.now(); }
+  if (yangi){ tmTikla(); arqonAnim = true; yuklandi = Date.now(); }
   $('royxat').classList.add('hidden');
   $('rBekor').classList.add('hidden');
   yangiProfil = false;
@@ -510,15 +488,10 @@ function ctlHTML(c){
   </div>
   <div class="svd">${c.kut > 0 ? 'Saqlanmoqda…' : 'Saqlandi ✓'}</div>`;
 }
-function mbarHTML(c){
-  const segs = Array.from({ length: 10 }, (_, i) => `<i class="${i < c.toldi ? 'on' : ''}"></i>`).join('');
-  return `<button class="mbar" data-act="sana" aria-label="Bir marta o'qidim"><span style="text-align:left;font-size:13px">Takror · bosing<br><span class="z-segs" style="display:grid;margin-top:6px">${segs}</span></span><b>${c.j.c}/${c.N}</b></button>`;
-}
 const tamomHTML = () => `<div class="card"><h2>🌟 Barcha bosqichlar tamom!</h2><p class="muted">Alloh qabul qilsin, hifzingizni mustahkam qilsin.</p></div>`;
-/* sanagich yoki mushaf + boshqaruv */
+/* sanagich + boshqaruv */
 function pastki(c, sanagich){
   if (c.tamom) return tamomHTML();
-  if (mz.k === 'mushaf') return `<div id="musHost"></div>${mbarHTML(c)}${ctlHTML(c)}`;
   return sanagich + ctlHTML(c);
 }
 
@@ -596,119 +569,6 @@ function bolalarHTML(c){
   </button></div>`)}`;
 }
 
-/* ---------- Mushaf (Madina mushafi sahifasi) ---------- */
-const MUS = { sah: {}, sura: null, el: null };
-const QAPI = 'https://api.quran.com/api/v4';
-async function suralar(){
-  if (MUS.sura) return MUS.sura;
-  try { const x = JSON.parse(localStorage.getItem('suralar') || 'null'); if (x){ MUS.sura = x; return x; } } catch(e){}
-  try {
-    const r = await (await fetch(QAPI + '/chapters?language=en')).json();
-    const o = {}; r.chapters.forEach(c => o[c.id] = { a: c.name_arabic, n: c.name_simple });
-    MUS.sura = o; try { localStorage.setItem('suralar', JSON.stringify(o)); } catch(e){}
-    return o;
-  } catch(e){ return {}; }
-}
-function shriftYukla(p){
-  if (!window.FontFace) return Promise.resolve(false);
-  const f = new FontFace('qpc' + p, `url(https://static.qurancdn.com/fonts/quran/hafs/v1/woff2/p${p}.woff2)`, { display: 'block' });
-  return Promise.race([f.load().then(x => { document.fonts.add(x); return true; }), new Promise(r => setTimeout(() => r(false), 8000))]).catch(() => false);
-}
-function sahifaOl(p){
-  if (MUS.sah[p]) return MUS.sah[p];
-  const pr = (async () => {
-    const url = `${QAPI}/verses/by_page/${p}?words=true&per_page=50&word_fields=code_v1,text_uthmani,line_number`;
-    const [r, sh] = await Promise.all([fetch(url).then(x => { if (!x.ok) throw new Error('http'); return x.json(); }), shriftYukla(p), suralar()]);
-    const qator = {}, boshlar = [];
-    let juz = 0, oxirgiSura = 0;
-    r.verses.forEach(v => {
-      const ch = Number(v.verse_key.split(':')[0]);
-      juz = juz || v.juz_number; oxirgiSura = ch;
-      if (v.verse_number === 1 && v.words.length) boshlar.push({ ch, L: v.words[0].line_number });
-      v.words.forEach(w => { (qator[w.line_number] = qator[w.line_number] || []).push({ c: w.code_v1, t: w.text_uthmani, e: w.char_type_name === 'end' }); });
-    });
-    const tur = {};
-    boshlar.forEach(b => {
-      if (b.ch !== 1 && b.ch !== 9 && !qator[b.L - 1]){ tur[b.L - 1] = { bsm: 1 }; if (!qator[b.L - 2] && b.L - 2 >= 1) tur[b.L - 2] = { sura: b.ch }; }
-      else if (!qator[b.L - 1] && b.L - 1 >= 1) tur[b.L - 1] = { sura: b.ch };
-    });
-    // sahifa oxirida keyingi sura sarlavhasi
-    const mavjud = Object.keys(qator).map(Number), oxirgiL = Math.max.apply(null, mavjud);
-    if (oxirgiL < 15 && p > 2){ tur[oxirgiL + 1] = { sura: oxirgiSura + 1 }; if (oxirgiL + 2 <= 15) tur[oxirgiL + 2] = { bsm: 1 }; }
-    const birinchi = Math.min.apply(null, mavjud.concat(Object.keys(tur).map(Number)));
-    const rows = [];
-    for (let L = birinchi; L <= 15; L++){
-      if (qator[L]) rows.push({ w: qator[L], L });
-      else if (tur[L]) rows.push(tur[L]);
-    }
-    return { p, rows, juz, glif: sh, sura: boshlar.length ? boshlar[0].ch : Number(r.verses[0].verse_key.split(':')[0]) };
-  })();
-  MUS.sah[p] = pr;
-  pr.catch(() => { delete MUS.sah[p]; });
-  return pr;
-}
-function musKorP(){ return korP || joriy().p; }
-function musHTML(d){
-  const glif = d.glif, ff = glif ? `font-family:qpc${d.p}` : "font-family:'Amiri Quran',Amiri,serif";
-  const sur = MUS.sura || {};
-  return d.rows.map(r => {
-    if (r.sura) return `<div class="ml sura"><span>سُورَةُ ${esc((sur[r.sura] || {}).a || '')}</span></div>`;
-    if (r.bsm) return `<div class="ml bsm"><span>بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</span></div>`;
-    const kam = d.p <= 2;
-    return `<div class="ml ${kam ? 'c' : ''} ${yopiq ? 'yop' : ''}" data-act="qator" style="${ff}">${r.w.map(w => `<span>${esc(glif ? w.c : w.t)}</span>`).join('')}</div>`;
-  }).join('');
-}
-function musMos(){
-  const w = MUS.el && MUS.el.querySelector('.mlw');
-  if (!w || !w.children.length) return;
-  const n = w.children.length, H = w.clientHeight, W = w.clientWidth;
-  let fs = Math.max(10, Math.min(34, H / Math.max(n, 15) / 1.5));
-  w.style.fontSize = fs + 'px';
-  let k = 1;
-  Array.from(w.children).forEach(l => { if (l.scrollWidth > W) k = Math.max(k, l.scrollWidth / W); });
-  if (k > 1) w.style.fontSize = (fs / k * 0.98) + 'px';
-}
-async function musChiz(){
-  if (!MUS.el) return;
-  const p = musKorP(), j = joriy();
-  const hd = MUS.el.querySelector('.mus-hd');
-  const yop = j.s >= 2;
-  hd.innerHTML = `<button class="nv" data-act="mvarq" data-v="-1" ${p <= 1 ? 'disabled' : ''} aria-label="Oldingi sahifa">‹</button>
-    <span><b>${p}-sahifa</b> <span id="musIzoh"></span></span>
-    ${p !== j.p ? `<button class="bq" data-act="mvarq" data-v="0">${j.p}-sahifaga qaytish</button>` : (yop ? `<button class="yb ${yopiq ? 'on' : ''}" data-act="yopish">${yopiq ? 'Ochish' : 'Yopish'}</button>` : '')}
-    <button class="nv" data-act="mvarq" data-v="1" ${p >= SAHIFA ? 'disabled' : ''} aria-label="Keyingi sahifa">›</button>`;
-  const w = MUS.el.querySelector('.mlw');
-  if (MUS.el.dataset.p === String(p) && w.children.length && MUS.el.dataset.y === String(yopiq && yop)){ izohQoy(p); return; }
-  MUS.el.dataset.p = p; MUS.el.dataset.y = String(yopiq && yop);
-  if (!w.children.length || w.dataset.p !== String(p)) w.innerHTML = '<div class="mus-xab">Mushaf sahifasi yuklanmoqda…</div>';
-  try {
-    const d = await sahifaOl(p);
-    if (musKorP() !== p) return;
-    if (!yop && yopiq) yopiq = false;
-    w.innerHTML = musHTML(d); w.dataset.p = p;
-    izohQoy(p);
-    requestAnimationFrame(musMos);
-    if (p < SAHIFA) sahifaOl(p + 1).catch(() => {});
-  } catch(e){
-    w.innerHTML = `<div class="mus-xab">Mushaf sahifasini yuklab bo'lmadi.<br>Internetni tekshiring. Sanash odatdagidek ishlayveradi.<br><br><button class="yb" data-act="mvarq" data-v="0">Qayta urinish</button></div>`;
-    delete MUS.el.dataset.p;
-  }
-}
-function izohQoy(p){
-  const el = $('musIzoh'); if (!el || !MUS.sah[p]) return;
-  MUS.sah[p].then(d => { const s = (MUS.sura || {})[d.sura]; if ($('musIzoh')) $('musIzoh').textContent = '· ' + (s ? s.n : '') + (d.juz ? ' · ' + d.juz + '-juz' : ''); }).catch(() => {});
-}
-function musJoyla(){
-  const host = $('musHost'); if (!host) return;
-  if (!MUS.el){
-    MUS.el = document.createElement('div'); MUS.el.className = 'mus';
-    MUS.el.innerHTML = '<div class="mus-hd"></div><div class="mlw"></div>';
-  }
-  host.replaceWith(MUS.el);
-  musChiz();
-}
-window.addEventListener('resize', () => requestAnimationFrame(musMos));
-
 /* ---------- Avatar va ramka ---------- */
 const BOSQICH_RANG = ['#1C3A7A', '#0B7A55', '#6E2A55', '#8C4A12', '#0F6E8E', '#5B2A86', '#7A1F2B', '#2F5D3A', '#3A3A8C', '#8C6A24'];
 function avatar(a, ism, px){
@@ -737,7 +597,6 @@ function render(){
   if (!st || !st.royxat) return;
   const c = ctxOl(), m = st.men, j = c.j;
   $('asosiy').innerHTML = mz.d === 'tasreg' ? tasregHTML(c) : mz.d === 'bolalar' ? bolalarHTML(c) : zamonHTML(c);
-  if (mz.k === 'mushaf' && !c.tamom) musJoyla();
   if (arqonAnim){ arqonAnim = false; requestAnimationFrame(() => requestAnimationFrame(() => { const r = $('acr'); if (r) r.setAttribute('width', 760); })); }
   try { c.kut > 0 ? tg.enableClosingConfirmation() : tg.disableClosingConfirmation(); } catch(e){}
 
@@ -790,7 +649,6 @@ function korinishChiz(){
       <button class="${on(mz.d, 'bolalar')}" data-act="dizayn" data-v="bolalar"><span class="pv pv-bolalar"></span>Bolalar</button>
     </div>
     ${mz.d === 'bolalar' ? '' : `<div class="lbl2">Rang</div><div class="seg"><button class="${on(mz.r, 'yashil')}" data-act="rang" data-v="yashil">Yashil</button><button class="${on(mz.r, 'pushti')}" data-act="rang" data-v="pushti">Pushti</button></div>`}
-    <div class="lbl2">O'qish ekrani</div><div class="seg"><button class="${on(mz.k, 'sanagich')}" data-act="kmode" data-v="sanagich">Sanagich</button><button class="${on(mz.k, 'mushaf')}" data-act="kmode" data-v="mushaf">Mushaf sahifasi</button></div>
     <div class="lbl2">Rejim</div><div class="seg"><button class="${on(mz.m, 'avto')}" data-act="rejim" data-v="avto">Avto</button><button class="${on(mz.m, 'kun')}" data-act="rejim" data-v="kun">Kunduz</button><button class="${on(mz.m, 'tun')}" data-act="rejim" data-v="tun">Tun</button></div>
     <p class="muted" style="font-size:12px;margin:6px 0 0">"Avto" telefoningiz sozlamasiga qarab kunduzgi yoki tungi ko'rinishga o'tadi.</p>`;
 }
@@ -819,7 +677,6 @@ async function sync(){
 
 function sanash(){
   if (!st || joriy().s > MAXB) return;
-  korP = null;
   tmBoshla();
   const old = joriy();
   pending++;
@@ -842,17 +699,13 @@ document.addEventListener('click', e => {
   const a = el.dataset.act, v = el.dataset.v;
   if (a === 'sana') sanash();
   else if (a === 'ayir'){ if (pending > 0){ pending--; render(); } }
-  else if (a === 'tugatdim'){ const j = joriy(); if (j.s > MAXB) return; pending += j.s * 10 - j.c; korP = null; haptic('ok'); tmNol(); render(); sync(); }
+  else if (a === 'tugatdim'){ const j = joriy(); if (j.s > MAXB) return; pending += j.s * 10 - j.c; haptic('ok'); tmNol(); render(); sync(); }
   else if (a === 'kop'){ $('modal').classList.remove('hidden'); $('betSoni').focus(); }
   else if (a === 'taymer'){ tm.start ? tmToxtat() : tmBoshla(); haptic(); render(); }
   else if (a === 'profil') profilAlmashtir(el.dataset.p);
   else if (a === 'dizayn') mavzuOzgartir({ d: v });
   else if (a === 'rang') mavzuOzgartir({ r: v });
   else if (a === 'rejim') mavzuOzgartir({ m: v });
-  else if (a === 'kmode') mavzuOzgartir({ k: v });
-  else if (a === 'mvarq'){ const d = Number(v); korP = d === 0 ? null : Math.min(SAHIFA, Math.max(1, musKorP() + d)); if (korP === joriy().p) korP = null; if (d === 0 && MUS.el) delete MUS.el.dataset.p; musChiz(); }
-  else if (a === 'yopish'){ yopiq = !yopiq; if (MUS.el) delete MUS.el.dataset.p; musChiz(); }
-  else if (a === 'qator'){ if (el.classList.contains('yop')) el.classList.toggle('och'); }
   else if (a === 'uzr') uzrBelgila(v);
   else if (a === 'davr'){ document.querySelectorAll('#davrlar button').forEach(x => x.classList.toggle('on', x === el)); davr = v; reytingYukla(); }
   else if (a === 'jins'){
